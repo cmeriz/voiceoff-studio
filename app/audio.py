@@ -2,11 +2,16 @@
 
 import asyncio
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
 SUPPORTED_FORMATS = {"mp3", "wav"}
 PROBE_TIMEOUT_SECONDS = 30
+ENCODERS = {
+    ".mp3": ["-c:a", "libmp3lame", "-b:a", "320k"],
+    ".wav": ["-c:a", "pcm_s24le"],
+}
 
 
 class InvalidAudio(Exception):
@@ -60,13 +65,28 @@ async def probe(path: Path) -> AudioInfo:
 
 
 async def encode_mp3(source: Path, destination: Path) -> None:
+    await _encode(source, destination)
+
+
+async def shift_pitch(source: Path, destination: Path, semitones: int) -> None:
+    """Writes source to destination, in destination's format, keeping its tempo."""
+    partial = destination.with_name(f"{destination.stem}.partial{destination.suffix}")
+    ratio = 2 ** (semitones / 12)
+    try:
+        await _encode(source, partial, "-af", f"rubberband=pitch={ratio:.6f}:pitchq=quality:channels=together")
+        os.replace(partial, destination)
+    finally:
+        partial.unlink(missing_ok=True)
+
+
+async def _encode(source: Path, destination: Path, *filters: str) -> None:
     process = await asyncio.create_subprocess_exec(
         "ffmpeg",
         "-nostdin", "-y",
         "-v", "error",
         "-i", str(source),
-        "-c:a", "libmp3lame",
-        "-b:a", "320k",
+        *filters,
+        *ENCODERS[destination.suffix],
         str(destination),
         stdout=asyncio.subprocess.DEVNULL,
         stderr=asyncio.subprocess.PIPE,

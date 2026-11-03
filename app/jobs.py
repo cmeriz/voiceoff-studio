@@ -7,12 +7,12 @@ import os
 import shutil
 import time
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from app.audio import AudioInfo
+from app.audio import AudioInfo, EncodingError, shift_pitch
 from app.config import Settings
-from app.separator import SeparationError, separate_vocals
+from app.separator import MASTER_FILENAME, SeparationError, separate_vocals
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ class Job:
     error: str | None = None
     started_at: float | None = None
     finished_at: float | None = None
+    pitch_versions: dict[str, str] = field(default_factory=dict)  # Semitones -> status.
 
 
 class JobManager:
@@ -54,6 +55,8 @@ class JobManager:
         self._current_id: str | None = None
         self._current_task: asyncio.Task | None = None
         self._background: list[asyncio.Task] = []
+        self._pitch_tasks: dict[str, set[asyncio.Task]] = {}
+        self._pitch_slot = asyncio.Semaphore(1)
 
     async def start(self) -> None:
         self.settings.jobs_dir.mkdir(parents=True, exist_ok=True)
@@ -69,6 +72,8 @@ class JobManager:
         tasks = list(self._background)
         if self._current_task:
             tasks.append(self._current_task)
+        for pitch_tasks in self._pitch_tasks.values():
+            tasks.extend(pitch_tasks)
         for task in tasks:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
@@ -107,8 +112,58 @@ class JobManager:
         if self._current_id == job_id and self._current_task:
             self._current_task.cancel()
             await asyncio.gather(self._current_task, return_exceptions=True)
+        pitch_tasks = self._pitch_tasks.pop(job_id, set())
+        for task in pitch_tasks:
+            task.cancel()
+        await asyncio.gather(*pitch_tasks, return_exceptions=True)
         await asyncio.to_thread(shutil.rmtree, self.job_dir(job_id), ignore_errors=True)
         return True
+
+    async def delete_all(self) -> int:
+        # The running job goes last, so the worker has nothing left to start when it stops.
+        job_ids = [job.id for job in self.list() if job.id != self._current_id]
+        if self._current_id in self._jobs:
+            job_ids.append(self._current_id)
+        for job_id in job_ids:
+            await self.delete(job_id)
+        return len(job_ids)
+
+    async def delete_pitch_versions(self) -> int:
+        """Removes every pitch version and keeps the songs. Returns how many were kept or running."""
+        jobs = list(self._jobs.values())
+        removed = sum(status in (DONE, PROCESSING) for job in jobs for status in job.pitch_versions.values())
+        tasks = [task for job_tasks in self._pitch_tasks.values() for task in job_tasks]
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+        for job in jobs:
+            if not job.pitch_versions:
+                continue
+            job.pitch_versions = {}
+            self._save(job)
+            for path in self.job_dir(job.id).glob("karaoke[+-]*"):
+                path.unlink(missing_ok=True)
+        return removed
+
+    def request_pitch(self, job: Job, semitones: int) -> str:
+        """Returns the version's status, starting its generation if needed."""
+        if semitones == 0:
+            return DONE
+        key = str(semitones)
+        status = job.pitch_versions.get(key)
+        if status in (DONE, PROCESSING):
+            return status
+        job.pitch_versions[key] = PROCESSING
+        task = asyncio.create_task(self._generate_pitch(job, semitones))
+        tasks = self._pitch_tasks.setdefault(job.id, set())
+        tasks.add(task)
+        task.add_done_callback(tasks.discard)
+        return PROCESSING
+
+    def karaoke_path(self, job: Job, semitones: int = 0) -> Path:
+        if semitones == 0:
+            return self.output_path(job)
+        return self.job_dir(job.id) / f"karaoke{semitones:+d}.{job.format}"
 
     def job_dir(self, job_id: str) -> Path:
         return self.settings.jobs_dir / job_id
@@ -131,6 +186,7 @@ class JobManager:
             "error": job.error,
             "elapsed_seconds": now - job.started_at if job.status == PROCESSING else None,
             "expires_in_seconds": max(self._expires_at(job) - now, 0) if job.finished_at else None,
+            "pitch_versions": job.pitch_versions,
         }
 
     def _expires_at(self, job: Job) -> float:
@@ -153,6 +209,9 @@ class JobManager:
                 continue
             if job.status in PENDING_STATUSES:
                 self._finish(job, FAILED, error=INTERRUPTED_MESSAGE)
+            job.pitch_versions = {key: status for key, status in job.pitch_versions.items() if status == DONE}
+            for partial in directory.glob("*.partial.*"):
+                partial.unlink(missing_ok=True)
             self._jobs[job.id] = job
 
     def _finish(self, job: Job, status: str, error: str | None = None) -> None:
@@ -206,6 +265,25 @@ class JobManager:
             self._finish(job, FAILED, error=UNEXPECTED_MESSAGE)
         else:
             self._finish(job, DONE)
+
+    def _pitch_source(self, job: Job) -> Path:
+        """Prefers the lossless master. Songs processed before it existed only have their output."""
+        master = self.job_dir(job.id) / MASTER_FILENAME
+        return master if master.is_file() else self.output_path(job)
+
+    async def _generate_pitch(self, job: Job, semitones: int) -> None:
+        status = DONE
+        try:
+            async with self._pitch_slot:
+                await asyncio.wait_for(
+                    shift_pitch(self._pitch_source(job), self.karaoke_path(job, semitones), semitones),
+                    self.settings.job_timeout_seconds,
+                )
+        except (EncodingError, TimeoutError, OSError):
+            logger.exception("Pitch shift %+d failed for job %s", semitones, job.id)
+            status = FAILED
+        job.pitch_versions[str(semitones)] = status
+        self._save(job)
 
     async def _cleanup_loop(self) -> None:
         while True:

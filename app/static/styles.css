@@ -193,11 +193,56 @@ main {
   padding-block: 48px 0;
 }
 
-.tracks h2 {
+.tracks-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
   margin-bottom: 16px;
+}
+
+.tracks h2 {
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.01em;
+}
+
+.tracks-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tracks-action {
+  min-height: 40px;
+  padding-inline: 14px;
+  border: 2px solid var(--navy-line);
+  border-radius: 20px;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tracks-action:hover:not(:disabled) {
+  border-color: var(--white);
+}
+
+.tracks-action.is-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.tracks-action.is-danger:hover:not(:disabled) {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: var(--navy);
+}
+
+.tracks-action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .track-list {
@@ -209,6 +254,7 @@ main {
 }
 
 .track {
+  min-width: 0; /* Grid items otherwise grow to fit long, unwrapped file names. */
   padding: 20px;
   border: 1px solid var(--navy-line);
   border-radius: 20px;
@@ -381,6 +427,68 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
+.player-controls {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+
+.pitch {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.pitch-label {
+  margin-right: 4px;
+}
+
+.pitch-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid var(--navy-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--white);
+}
+
+.pitch-button:hover:not(:disabled) {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+
+.pitch-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pitch-value {
+  width: 2.25em;
+  color: var(--lime);
+  font-size: 1.0625rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.player-note {
+  flex: 1 1 100%;
+  color: var(--slate);
+  font-size: 0.875rem;
+}
+
+.player-note.is-error {
+  color: var(--danger);
+}
+
 /* The logo's switch, used for real: Off plays the karaoke, On plays the original. */
 
 .voice-toggle {
@@ -394,6 +502,11 @@ main {
   background: transparent;
   font-size: 0.9375rem;
   font-weight: 700;
+}
+
+.voice-toggle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .voice-toggle-track {
@@ -439,6 +552,7 @@ main {
   align-items: center;
   gap: 8px;
   min-height: 44px;
+  margin-left: auto;
   padding-inline: 16px;
   border: 2px solid var(--lime);
   border-radius: 22px;
@@ -450,6 +564,70 @@ main {
 .download-button:hover {
   background: var(--lime);
   color: var(--navy);
+}
+
+.download-button[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Confirmation dialog */
+
+.confirm-dialog {
+  width: min(440px, calc(100vw - 32px));
+  padding: 24px;
+  border: 1px solid var(--navy-line);
+  border-radius: 20px;
+  background: var(--navy-raised);
+  color: var(--white);
+}
+
+.confirm-dialog::backdrop {
+  background: rgba(8, 12, 20, 0.75);
+}
+
+.confirm-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.confirm-message {
+  margin-top: 8px;
+  color: var(--slate);
+}
+
+.confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.confirm-button {
+  min-height: 44px;
+  padding-inline: 18px;
+  border: 2px solid var(--navy-line);
+  border-radius: 22px;
+  background: transparent;
+  font-weight: 700;
+}
+
+.confirm-button:hover {
+  border-color: var(--white);
+}
+
+.confirm-button.is-danger {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: var(--navy);
+}
+
+.confirm-button.is-danger:hover {
+  border-color: var(--white);
 }
 
 /* Footer */
@@ -477,8 +655,8 @@ main {
     flex-basis: calc(100% - 64px);
   }
 
-  .voice-toggle {
-    margin-right: auto;
+  .player-controls {
+    gap: 12px 16px;
   }
 }
 

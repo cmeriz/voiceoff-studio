@@ -37,7 +37,13 @@
     </section>
 
     <section class="tracks" id="tracks-section" aria-labelledby="tracks-title" hidden>
-      <h2 id="tracks-title">Tus pistas</h2>
+      <div class="tracks-header">
+        <h2 id="tracks-title">Tus pistas</h2>
+        <div class="tracks-actions">
+          <button class="tracks-action" id="clear-pitch" type="button"></button>
+          <button class="tracks-action is-danger" id="delete-all" type="button"></button>
+        </div>
+      </div>
       <ul class="track-list" id="track-list"></ul>
     </section>
   </main>
@@ -46,6 +52,17 @@
     <p id="privacy-note">Todo se procesa en este equipo. Tus archivos no salen de aquí.</p>
     <p>Separación de voz con Demucs v4.</p>
   </footer>
+
+  <dialog class="confirm-dialog" id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+    <form method="dialog">
+      <h2 class="confirm-title" id="confirm-title"></h2>
+      <p class="confirm-message" id="confirm-message"></p>
+      <div class="confirm-actions">
+        <button class="confirm-button" id="confirm-cancel" value="cancel" autofocus></button>
+        <button class="confirm-button is-danger" id="confirm-accept" value="confirm"></button>
+      </div>
+    </form>
+  </dialog>
 
   <template id="track-template">
     <li class="track">
@@ -75,15 +92,28 @@
           <input class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Posición de la canción">
           <div class="player-times"><span class="time-current">0:00</span><span class="time-total">0:00</span></div>
         </div>
-        <button class="voice-toggle" type="button" role="switch" aria-checked="false">
-          <span class="voice-toggle-label">Voz</span>
-          <span class="voice-toggle-track" aria-hidden="true"><span class="voice-toggle-knob"></span></span>
-          <span class="voice-toggle-state">Off</span>
-        </button>
-        <a class="download-button">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Descargar
-        </a>
+        <div class="player-controls">
+          <div class="pitch" role="group" aria-label="Tono en semitonos">
+            <span class="pitch-label" aria-hidden="true">Tono</span>
+            <button class="pitch-button pitch-down" type="button" aria-label="Bajar un semitono">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            </button>
+            <output class="pitch-value">0</output>
+            <button class="pitch-button pitch-up" type="button" aria-label="Subir un semitono">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 12h14M12 5v14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <button class="voice-toggle" type="button" role="switch" aria-checked="false">
+            <span class="voice-toggle-label">Voz</span>
+            <span class="voice-toggle-track" aria-hidden="true"><span class="voice-toggle-knob"></span></span>
+            <span class="voice-toggle-state">Off</span>
+          </button>
+          <a class="download-button">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Descargar
+          </a>
+        </div>
+        <p class="player-note" role="status" hidden></p>
       </div>
     </li>
   </template>

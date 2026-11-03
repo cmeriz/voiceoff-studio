@@ -19,6 +19,7 @@ STDERR_TAIL_BYTES = 4000
 # Share of the progress bar reserved for Demucs; the rest covers encoding.
 SEPARATION_PROGRESS_SHARE = 0.95
 OUT_OF_MEMORY_RETURN_CODES = {-9, 137}
+MASTER_FILENAME = "master.wav"
 
 
 class SeparationError(Exception):
@@ -91,7 +92,10 @@ async def separate_vocals(
             raise SeparationError("El modelo no generó ninguna pista.")
 
         if output_format == "mp3":
-            await encode_mp3(stem, output_path)
+            # The lossless stem stays, so later pitch changes avoid re-encoding the MP3.
+            master = output_path.with_name(MASTER_FILENAME)
+            shutil.move(stem, master)
+            await encode_mp3(master, output_path)
         else:
             shutil.move(stem, output_path)
     finally:

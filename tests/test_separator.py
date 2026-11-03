@@ -64,6 +64,7 @@ def test_mp3_output_is_encoded(monkeypatch, tmp_path):
     assert shutil.which("ffprobe")
     from app.audio import probe
     assert asyncio.run(probe(output)).format == "mp3"
+    assert (tmp_path / separator.MASTER_FILENAME).read_bytes() == source.read_bytes()
 
 
 def test_failure_gives_a_user_message_and_cleans_up(monkeypatch, tmp_path):

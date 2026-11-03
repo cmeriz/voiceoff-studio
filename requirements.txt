@@ -1,0 +1,107 @@
+--index-url https://pypi.org/simple
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+annotated-types==0.8.0
+    # via pydantic
+anyio==4.7.0
+    # via
+    #   -r requirements.in
+    #   starlette
+cffi==2.1.1
+    # via soundfile
+click==8.5.0
+    # via uvicorn
+cloudpickle==3.1.2
+    # via submitit
+demucs==4.0.1
+    # via -r requirements.in
+dora-search==0.1.13
+    # via demucs
+einops==0.8.2
+    # via demucs
+fastapi==0.115.6
+    # via -r requirements.in
+filelock==4.2.7
+    # via torch
+fsspec==2026.9.0
+    # via torch
+h11==0.16.0
+    # via uvicorn
+idna==3.20
+    # via anyio
+jinja2==3.1.6
+    # via torch
+julius==0.2.8
+    # via demucs
+lameenc==1.9.0
+    # via demucs
+markupsafe==3.0.4
+    # via jinja2
+mpmath==1.3.0
+    # via sympy
+networkx==3.7
+    # via torch
+numpy==2.1.3
+    # via
+    #   -r requirements.in
+    #   openunmix
+omegaconf==2.4.0
+    # via dora-search
+openunmix==1.3.0
+    # via demucs
+pycparser==3.12
+    # via cffi
+pydantic==2.14.2
+    # via fastapi
+pydantic-core==2.50.2
+    # via pydantic
+pyyaml==6.0.3
+    # via
+    #   demucs
+    #   omegaconf
+retrying==1.4.2
+    # via dora-search
+setuptools==84.2.1
+    # via torch
+sniffio==1.3.1
+    # via anyio
+soundfile==0.12.1
+    # via -r requirements.in
+starlette==0.41.3
+    # via fastapi
+submitit==1.5.4
+    # via dora-search
+sympy==1.13.1
+    # via torch
+torch==2.5.1+cpu
+    # via
+    #   -r requirements.in
+    #   demucs
+    #   dora-search
+    #   julius
+    #   openunmix
+    #   torchaudio
+torchaudio==2.5.1+cpu
+    # via
+    #   -r requirements.in
+    #   demucs
+    #   openunmix
+tqdm==4.70.1
+    # via
+    #   demucs
+    #   openunmix
+treetable==0.2.6
+    # via dora-search
+typing-extensions==4.16.0
+    # via
+    #   anyio
+    #   fastapi
+    #   pydantic
+    #   pydantic-core
+    #   submitit
+    #   torch
+    #   typing-inspection
+typing-inspection==0.4.4
+    # via pydantic
+uvicorn==0.34.0
+    # via -r requirements.in

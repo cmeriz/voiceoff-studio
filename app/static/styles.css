@@ -1,0 +1,490 @@
+@font-face {
+  font-family: "Inter Tight";
+  src: url("/fonts/inter-tight-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  --navy: #0f1724;
+  --navy-raised: #172131;
+  --navy-line: #2a3648;
+  --lime: #c6f432;
+  --lime-hover: #d6fb5c;
+  --white: #ffffff;
+  --slate: #9aa6b8;
+  --danger: #ff8d7a;
+  --font: "Inter Tight", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Also covers elements with their own display value, and SVGs, which ignore the attribute. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-inline: 20px;
+  background: var(--navy);
+  color: var(--white);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.site-header,
+main,
+.site-footer {
+  width: 100%;
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.site-header {
+  padding-block: 32px 0;
+}
+
+.logo {
+  display: block;
+  width: 220px;
+  height: auto;
+}
+
+main {
+  flex: 1;
+}
+
+/* Intro */
+
+.intro {
+  padding-block: 56px 32px;
+}
+
+.intro h1 {
+  font-size: clamp(2.25rem, 7vw, 3.75rem);
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+}
+
+.intro h1 span {
+  display: block;
+  color: var(--lime);
+}
+
+.intro p {
+  margin-top: 16px;
+  max-width: 34rem;
+  color: var(--slate);
+  font-size: 1.125rem;
+}
+
+/* Dropzone: the logo's switch flips on while a file hovers over it. */
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  border: 2px dashed var(--navy-line);
+  border-radius: 24px;
+  background: var(--navy-raised);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.dropzone:hover,
+.dropzone:focus-within,
+.dropzone.is-dragging {
+  border-color: var(--lime);
+}
+
+.dropzone:focus-within {
+  outline: 3px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.dropzone-switch {
+  display: block;
+  width: 112px;
+  height: 56px;
+  margin-bottom: 20px;
+  padding: 6px;
+  border-radius: 28px;
+  background: var(--lime);
+}
+
+.dropzone-knob {
+  display: block;
+  width: 44px;
+  height: 44px;
+  transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.6, 1);
+}
+
+.dropzone-knob img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.dropzone:hover .dropzone-knob,
+.dropzone.is-dragging .dropzone-knob {
+  transform: translateX(56px);
+}
+
+.dropzone-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.dropzone-action {
+  color: var(--white);
+}
+
+.dropzone-limits {
+  margin-top: 12px;
+  color: var(--slate);
+  font-size: 0.875rem;
+}
+
+.upload-error {
+  margin-top: 12px;
+  color: var(--danger);
+  font-weight: 500;
+}
+
+/* Tracks */
+
+.tracks {
+  padding-block: 48px 0;
+}
+
+.tracks h2 {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.track-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.track {
+  padding: 20px;
+  border: 1px solid var(--navy-line);
+  border-radius: 20px;
+  background: var(--navy-raised);
+}
+
+.track-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.track-info {
+  min-width: 0;
+}
+
+.track-name {
+  overflow: hidden;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track-meta {
+  color: var(--slate);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.icon-button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: -6px -6px 0 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--slate);
+}
+
+.icon-button:hover {
+  background: var(--navy-line);
+  color: var(--white);
+}
+
+.track-progress {
+  margin-top: 16px;
+}
+
+.progress-bar {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--navy-line);
+}
+
+.progress-bar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 5px;
+  background: var(--lime);
+  transition: width 0.4s ease;
+}
+
+.progress-bar.is-waiting span {
+  width: 30%;
+  animation: progress-wait 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes progress-wait {
+  from { transform: translateX(-20%); }
+  to { transform: translateX(260%); }
+}
+
+.progress-label {
+  margin-top: 8px;
+  color: var(--slate);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.track-error {
+  margin-top: 12px;
+  color: var(--danger);
+  font-size: 0.9375rem;
+}
+
+/* Player */
+
+.player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 16px;
+}
+
+.play-button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--navy);
+}
+
+.play-button:hover {
+  background: var(--lime-hover);
+}
+
+.player-timeline {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.seek {
+  display: block;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  --played: 0%;
+}
+
+.seek::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--lime) var(--played), var(--navy-line) var(--played));
+}
+
+.seek::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--lime) var(--played), var(--navy-line) var(--played));
+}
+
+.seek::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--white);
+  appearance: none;
+}
+
+.seek::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--white);
+}
+
+.player-times {
+  display: flex;
+  justify-content: space-between;
+  color: var(--slate);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The logo's switch, used for real: Off plays the karaoke, On plays the original. */
+
+.voice-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.voice-toggle-track {
+  display: block;
+  width: 48px;
+  height: 28px;
+  padding: 3px;
+  border-radius: 14px;
+  background: var(--lime);
+  transition: background-color 0.2s;
+}
+
+.voice-toggle-knob {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--navy);
+  transition: transform 0.2s;
+}
+
+.voice-toggle-state {
+  width: 1.75em;
+  color: var(--lime);
+  text-align: left;
+}
+
+.voice-toggle[aria-checked="true"] .voice-toggle-track {
+  background: var(--slate);
+}
+
+.voice-toggle[aria-checked="true"] .voice-toggle-knob {
+  transform: translateX(20px);
+}
+
+.voice-toggle[aria-checked="true"] .voice-toggle-state {
+  color: var(--white);
+}
+
+.download-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-inline: 16px;
+  border: 2px solid var(--lime);
+  border-radius: 22px;
+  color: var(--lime);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.download-button:hover {
+  background: var(--lime);
+  color: var(--navy);
+}
+
+/* Footer */
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 24px;
+  padding-block: 56px 28px;
+  color: var(--slate);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 560px) {
+  .logo {
+    width: 180px;
+  }
+
+  .intro {
+    padding-block: 36px 24px;
+  }
+
+  .player-timeline {
+    flex-basis: calc(100% - 64px);
+  }
+
+  .voice-toggle {
+    margin-right: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

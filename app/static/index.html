@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VoiceOff Studio</title>
+  <meta name="description" content="Quita la voz de tus canciones y crea versiones karaoke.">
+  <meta name="theme-color" content="#0F1724">
+  <link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <img class="logo" src="/brand/logo-dark.svg" alt="VoiceOff Studio" width="1126" height="350">
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Apaga la voz. <span>Quédate con la música.</span></h1>
+      <p>Sube una canción y la IA separa la voz para crear tu versión karaoke.</p>
+    </section>
+
+    <section aria-label="Subir canciones">
+      <label class="dropzone" id="dropzone">
+        <input id="file-input" class="visually-hidden" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav" multiple>
+        <span class="dropzone-switch" aria-hidden="true">
+          <span class="dropzone-knob">
+            <img src="/brand/mic-off.svg" alt="" width="40" height="40">
+          </span>
+        </span>
+        <span class="dropzone-title">Arrastra tu canción aquí</span>
+        <span class="dropzone-action">o haz clic para elegir un archivo</span>
+        <span class="dropzone-limits" id="limits">MP3 o WAV</span>
+      </label>
+      <p class="upload-error" id="upload-error" role="alert" hidden></p>
+    </section>
+
+    <section class="tracks" id="tracks-section" aria-labelledby="tracks-title" hidden>
+      <h2 id="tracks-title">Tus pistas</h2>
+      <ul class="track-list" id="track-list"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p id="privacy-note">Todo se procesa en este equipo. Tus archivos no salen de aquí.</p>
+    <p>Separación de voz con Demucs v4.</p>
+  </footer>
+
+  <template id="track-template">
+    <li class="track">
+      <div class="track-head">
+        <div class="track-info">
+          <h3 class="track-name"></h3>
+          <p class="track-meta"></p>
+        </div>
+        <button class="icon-button track-remove" type="button">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="track-progress" hidden>
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"><span></span></div>
+        <p class="progress-label" aria-live="polite"></p>
+      </div>
+
+      <p class="track-error" hidden></p>
+
+      <div class="player" hidden>
+        <button class="play-button" type="button" aria-label="Reproducir">
+          <svg class="icon-play" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 8 5.5z" fill="currentColor"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" hidden><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>
+        </button>
+        <div class="player-timeline">
+          <input class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Posición de la canción">
+          <div class="player-times"><span class="time-current">0:00</span><span class="time-total">0:00</span></div>
+        </div>
+        <button class="voice-toggle" type="button" role="switch" aria-checked="false">
+          <span class="voice-toggle-label">Voz</span>
+          <span class="voice-toggle-track" aria-hidden="true"><span class="voice-toggle-knob"></span></span>
+          <span class="voice-toggle-state">Off</span>
+        </button>
+        <a class="download-button">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Descargar
+        </a>
+      </div>
+    </li>
+  </template>
+
+  <script src="/app.js"></script>
+</body>
+</html>
